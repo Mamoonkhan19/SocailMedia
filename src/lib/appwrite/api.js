@@ -268,6 +268,34 @@ export async function getRecentPosts() {
         throw error;
     }
 }
+export async function getProfilePosts(userId) {
+  if (!userId) throw new Error("User ID is required");
+
+  try {
+    const posts = await databases.listDocuments(
+      appwriteConfig.databaseId,
+      appwriteConfig.postsCollectionId || 'post',   // Use config if possible
+      [
+        Query.orderDesc("$createdAt"),
+        Query.limit(30),
+        Query.equal("creator", userId),
+        Query.select([
+          '*',
+          'creator.*',
+          'creator.imageUrl',
+          'creator.name',
+          'creator.username',
+          'likes.*',           // ← Better to use this if likes is a relation
+        ])
+      ]
+    );
+
+    return posts;
+  } catch (error) {
+    console.error("Error in getProfilePosts:", error);
+    throw error;
+  }
+}
 export async function likePost(postId, likeArray) {
     console.log(postId)
     try {
@@ -366,6 +394,11 @@ export async function getPostPreview(postIdToBePreviewd) {
             appwriteConfig.databaseId,
             appwriteConfig.postsCollectionId,
             postIdToBePreviewd,
+            [Query.select([
+                '*',
+                'creator.*',           // This is already working
+                'likes.*'              // ← Add this (or whatever your relation key is)
+            ])]
         )
         if (!response) throw new Error("Post creation failed");
         return response;
@@ -375,3 +408,44 @@ export async function getPostPreview(postIdToBePreviewd) {
     }
 }
 
+export async function searchPosts(searchTerm) {
+  try {
+    const posts = await databases.listDocuments(
+      appwriteConfig.databaseId,
+      appwriteConfig.postsCollectionId,
+      [Query.search("caption", searchTerm)]
+    );
+
+    if (!posts) throw Error;
+
+    return posts;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+export async function getInfinitePosts({ pageParam }) {
+  const queries = [Query.orderDesc("$updatedAt"), Query.limit(9),  Query.select([
+                    '*',
+                    'creator.*',           // This is already working
+                    'likes.'              // ← Add this (or whatever your relation key is)
+                ])];
+
+  if (pageParam) {
+    queries.push(Query.cursorAfter(pageParam.toString()));
+  }
+
+  try {
+    const posts = await databases.listDocuments(
+      appwriteConfig.databaseId,
+      appwriteConfig.postsCollectionId,
+      queries
+    );
+
+    if (!posts) throw Error;
+
+    return posts;
+  } catch (error) {
+    console.log(error);
+  }
+}

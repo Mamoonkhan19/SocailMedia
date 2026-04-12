@@ -233,6 +233,7 @@
     bottom: 0;
     z-index: 50;
     display: flex;
+    position:fixed;
     justify-content: space-between;
     align-items: center;
     width: 100%;

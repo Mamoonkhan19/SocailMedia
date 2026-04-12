@@ -11,4 +11,5 @@ export const QUERY_KEYS = {
   GET_FILE_PREVIEW: "getFilePreview",
   SEARCH_POSTS: "getSearchPosts",
   GET_SAVED_POSTS: "getSavedPosts",
+  GET_PROFILE_POSTS: 'getProfilePosts'
 };

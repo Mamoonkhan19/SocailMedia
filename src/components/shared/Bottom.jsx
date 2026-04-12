@@ -5,7 +5,7 @@ import { Link, useLocation } from 'react-router-dom';
 function Bottom() {
   const { pathname } = useLocation();
   return (
-    <nav className="bottom-bar flex">
+    <nav className="bottom-bar flex fixed">
         {
         bottombarLinks.map((link) => {
           const isActive = pathname === link.route;

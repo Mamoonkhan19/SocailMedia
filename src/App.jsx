@@ -35,11 +35,12 @@ function App() {
           <Route path = "/saved"              element = {<Saved />} />
           <Route path = "/explore"            element = {<Explore />} />
           <Route path = "/all-users"          element = {<AllUsers />} />
-          <Route path="/post/:postId" element={<PostDetails />} /> 
+          <Route path="/posts/:id/*" element={<PostDetails />} /> 
           <Route path = "/profile/:id/*"      element = {<Profile />} />
           <Route path = "/create-post"        element = {<CreatePost />} />
           <Route path = "/update-post/:id"    element = {<EditPost />} />
           <Route path = "/update-profile/:id" element = {<UpdateProfile />} />
+          <Route path='/profile/posts' element={<PostDetails />} />
         </Route>
 
 
