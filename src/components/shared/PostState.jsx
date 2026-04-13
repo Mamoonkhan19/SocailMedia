@@ -3,8 +3,16 @@ import { useDeleteSavePost, useGetCurrentUser, useLikePost, useSavePost } from '
 import Loader from './Loader';
 
 function PostState({ post, userId }) {
+  // Extract accountId from likes if they are objects, otherwise use the like directly
+  const extractedLikes = post?.likes.map(like => {
+    if(like.accountId) {
+      return like.accountId;
+    }
+    return like
+  }) || [];
   const [isSaved, setIsSaved] = useState(false);
-  const [likes, setLikes] = useState(post?.likes || []);
+  const [likes, setLikes] = useState(extractedLikes);
+  
 
   const { mutateAsync: likePost, isPending: isLikePending } = useLikePost();
   const { mutateAsync: savePost, isPending: isSavePending } = useSavePost();
@@ -30,8 +38,8 @@ function PostState({ post, userId }) {
       newLikes = newLikes.filter(id => id !== userId);
     } else {
       newLikes.push(userId);
+      // newLikes.push({ accountId: userId });
     }
-
     setLikes(newLikes);
     likePost({ postId: post.$id, likeArray: newLikes });
   };

@@ -36,9 +36,9 @@ const Explore = () => {
   const shouldShowSearchResults = searchValue !== "";
 
   return (
-    <div className="explore-container px-2 md:px-0 pb-20">
+    <div className="explore-container h-screen px-2 md:px-0 pb-20">
       {/* Search Bar */}
-      <div className="explore-inner_container sticky top-0 bg-[#09090A] z-50 py-4 border-b border-dark-4">
+      <div className="explore-inner_container h-screen    top-0 bg-[#0d0dzzzz0f] z-50 py-4 border-b border-dark-4">
         <h2 className="h3-bold md:h2-bold mb-4 px-2">Explore</h2>
         
         <div className="flex gap-3 px-4 py-3 w-full rounded-2xl bg-dark-4 items-center">

@@ -13,7 +13,7 @@ function PostDetails() {
   
   const { data: post, isLoading } = useGetPostById(id);
   const { mutate: deletePost, isPending: isDeleting } = useDeletePost();
-
+  console.log(post)
   const [showDeleteMenu, setShowDeleteMenu] = useState(false);
 
   if (isLoading) {

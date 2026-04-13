@@ -203,10 +203,12 @@ export async function updatePost(post) {
     }
 }
 export async function deletePost(postId,imageId) {
+    console.log(postId,imageId)
     if(!postId||!imageId) throw new Error("PostId and imageId are required");
     try {
+        const fileDeletion = await deleteFile(imageId);
+        if (!fileDeletion) throw new Error("Failed to delete associated file");
         const deletes = await databases.deleteDocument(appwriteConfig.databaseId, appwriteConfig.postsCollectionId, postId);
-        await deleteFile(imageId);
         return deletes
     } catch (error) {
         console.log(error)
