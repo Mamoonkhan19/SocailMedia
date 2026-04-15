@@ -11,7 +11,7 @@ function PostCard({ post}) {
   {/* 1. HEADER: User info and Edit button */}
   <div className=" flex justify-between items-center p-4">
     <div className="flex items-center gap-3">
-      <Link to={`/profile/${post.creator.$id}`}>
+      <Link to={`/profile/${post?.creator?.$id}`}>
         <img
           src={post.creator?.imageUrl || "/assets/icons/profile-placeholder.svg"}
           alt="creator"

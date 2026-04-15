@@ -1,5 +1,6 @@
 import { ID, Query } from "appwrite"
 import { account, appwriteConfig, avatars, databases, storage } from "./config"
+import { QrCode } from "lucide-react"
 
 export async function createAccount(user) {
     try {
@@ -450,4 +451,83 @@ export async function getInfinitePosts({ pageParam }) {
   } catch (error) {
     console.log(error);
   }
+}
+// profile
+export async function getUserById(userId) {
+    try {
+        const currentUser = await databases.getDocument(
+            appwriteConfig.databaseId,
+            'users',
+            userId,
+        );
+        if (!currentUser) throw new Error("No authenticated user found");
+
+        return currentUser
+    } catch (error) {
+        console.log(error)
+        throw new Error("Failed to get user");
+    }
+}
+export async function getUpdateProfile(userId,userProfileValues) {
+    let ImageInfo = {
+        imageId:userProfileValues.imageId,
+        imageUrl:userProfileValues.imageUrl
+    }
+    const hasFileUpdate = userProfileValues.file && userProfileValues.file.length > 0;
+    try{
+    if(!userId) throw new Error("User ID is required");
+    
+        if (hasFileUpdate) {
+            const deletefile = await deleteFile(userProfileValues.imageId);
+            if(!deletefile) throw new Error("Failed to delete associated file");
+            if (!userProfileValues.file || userProfileValues.file.length === 0) throw new Error("File is required");
+            // 1. Upload the file
+            const uploadedFile = await fileUpload(userProfileValues.file[0]); // Pass the single file object here
+            if (!uploadedFile) throw new Error("File upload failed");
+            const fileUrl = await FilePreview(uploadedFile.$id);
+            if (!fileUrl) {
+                // If post creation fails, delete the uploaded file to avoid orphaned files
+                await deleteFile(uploadedFile.$id);
+                throw new Error("Post creation failed");
+            }
+            ImageInfo = {
+                ...ImageInfo,
+                imageUrl: fileUrl, // Store the file URL returned from the fileUrl
+                imageId: uploadedFile.$id, // Store the file ID or URL returned from the upload
+            }
+        }
+    const currentUser = await databases.updateDocument(
+            appwriteConfig.databaseId,
+            'users',
+            userId,
+            {
+                username: userProfileValues.username,
+                bio: userProfileValues.bio,
+                ...ImageInfo
+            }
+        );
+        if (!currentUser) throw new Error("No authenticated user found");
+
+        return currentUser
+    } catch (error) {
+        console.log(error)
+        throw new Error("Failed to get user");
+    }
+}
+
+export async function GetAllUser() {
+    try {
+        const user = await databases.listDocuments(
+            appwriteConfig.databaseId,
+            'users',
+            [
+                Query.limit(200)
+            ]
+        );
+        if (!user) throw new Error("No authenticated user found");
+        return user
+    } catch (error) {
+        console.log(error);
+        throw new Error("error in getalluser")
+    }
 }
